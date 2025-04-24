@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Register- Dental{% endblock %}
+
+{% block content %}
+<style>
+    .auth-background {
+        background: url("{% static 'img/auth_background.jpg' %}") no-repeat center center fixed;
+        background-size: cover;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .register-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        min-height: 100vh;
+        padding-top: 20px; /* Moves form down */
+        padding-bottom: 50px;
+    }
+
+    .register-card {
+        background: rgba(255, 255, 255, 0.9); /* Light transparency to enhance readability */
+        width: 100%;
+        max-width: 500px;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .register-card .form-label {
+        font-weight: bold;
+    }
+
+    .register-card input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .register-card .btn {
+        padding: 10px;
+        font-size: 18px;
+        border-radius: 5px;
+    }
+</style>
+<br><br>
+<div class="auth-background">
+    <div class="register-container">
+        <div class="col-md-6 d-flex justify-content-center">
+            <div class="card shadow-lg p-4 register-card">
+                <div class="card-body">
+                    <h3 class="text-center text-primary mb-4">Register</h3>
+                    <form method="POST" action="{% url 'register' %}">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">{{ field.label }}</label>
+                                {{ field }}
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-info w-100">Register</button>
+                    </form>
+                    <p class="text-center mt-3">
+                        Already have an account? <a href="{% url 'login' %}" class="text-decoration-none">Login here</a>
+                    </p>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert {% if message.tags == 'error' %}alert-danger{% endif %} text-center">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br><br>
+{% endblock %}

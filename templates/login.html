@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Login - Dental{% endblock %}
+
+{% block content %}
+<style>
+    .auth-background {
+        background: url("{% static 'img/auth_background.jpg' %}") no-repeat center center fixed;
+        background-size: cover;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        min-height: 100vh;
+        padding-top: 20px; /* Moves form down */
+    }
+
+    .login-card {
+        background: rgba(255, 255, 255, 0.9); /* Light transparency for readability */
+        width: 100%;
+        max-width: 500px;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .login-card .form-label {
+        font-weight: bold;
+    }
+
+    .login-card input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .login-card .btn {
+        padding: 10px;
+        font-size: 18px;
+        border-radius: 5px;
+    }
+</style>
+
+<div class="auth-background">
+    <div class="login-container">
+        <div class="col-md-6 d-flex justify-content-center">
+            <div class="card shadow-lg p-4 login-card">
+                <div class="card-body">
+                    <h3 class="text-center text-primary mb-4">Login</h3>
+                    <form method="POST" action="{% url 'login' %}">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="text-danger small">
+                                        {{ field.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <a href="#" class="text-decoration-none text-danger" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forgot Password?</a><br><br>
+                        <button type="submit" class="btn btn-info w-100">Login</button><br>
+                    </form>
+                    <p class="text-center mt-3">
+                        Don't have an account? <a href="{% url 'register' %}" class="text-decoration-none">Register here</a>
+                    </p>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert {% if message.tags == 'error' %}alert-danger{% endif %} text-center">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Forgot Password Modal -->
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="forgotPasswordModalLabel">Reset Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="forgotPasswordMessage"></div> <!-- Success/Error message will be shown here -->
+                <form id="forgotPasswordForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Enter your email</label>
+                        <input type="email" class="form-control" id="forgotEmail" name="email" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Send Reset Link</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("forgotPasswordForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent default form submission
+        
+        let email = document.getElementById("forgotEmail").value;
+        let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch("{% url 'password_reset' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": csrfToken
+            },
+            body: new URLSearchParams({ email: email })
+        })
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById("forgotPasswordMessage").innerHTML = 
+                '<div class="alert alert-success">A password reset link has been sent to your email.</div>';
+            document.getElementById("forgotPasswordForm").reset();
+        })
+        .catch(error => {
+            document.getElementById("forgotPasswordMessage").innerHTML = 
+                '<div class="alert alert-danger">Error sending email. Please try again.</div>';
+        });
+    });
+</script>
+
+{% endblock %}

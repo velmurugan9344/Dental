@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Search Results for Doctors- Dental{% endblock %}
+
+{% block content %}
+<br><br>
+<h2 style="margin-left: 80px;">Search results for <u><span style="color:red;">{{ selected_service }}</span></u>😊</h2><br>
+  {% if doctors %}
+      {% for doctor in doctors %}
+      <div style="display: flex; align-items: center; margin-left: 350px;">
+          <!-- Doctor Image -->
+          <div style="flex: 0 0 120px; text-align: center;">
+              <img src="{% static doctor.image %}" alt="{{ doctor.name }}" style="width: 300px; height: 300px; object-fit: cover; border-radius: 0%;">
+          </div>
+
+          <!-- Vertical Line -->
+          <div style="width: 5px; height: 200px; background-color:blue; margin: 0 20px;"></div>
+
+          <!-- Doctor Details -->
+          <div style="flex: 1;">
+              <h3 style="margin: 0;"><i>{{ doctor.name }}</i></h3>
+              <p style="margin: 5px 0;">Specialty: {{ doctor.specialty }}</p>
+              <a href="{% url 'home' %}?service={{ selected_service }}&doctor={{ doctor.name }}#appointment-form" class="btn btn-primary" style="display: inline-block; margin-top: 10px; background-color: #28a745; color: white; padding: 8px 12px; border-radius: 4px; text-decoration: none;">
+                  Book Now
+              </a>
+          </div>
+      </div><br><br>
+      <!-- Horizontal Line -->
+      <div style="width: 1000px; height: 5px; background-color:#ccc; margin-left:180px;"></div><br>
+      <div style="margin-left:180px;">
+        <h3>“Our specialists are dedicated to providing top-tier care. With years of experience and advanced training,
+            they ensure each patient receives personalized, effective treatment in a comfortable environment.”</h3>
+      </div><br>
+      {% endfor %}
+  {% else %}
+      <p>No doctors available for this service.</p>
+  {% endif %}
+{% endblock %}
